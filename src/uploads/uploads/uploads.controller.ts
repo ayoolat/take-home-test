@@ -38,7 +38,7 @@ export class UploadsController {
     return ResponseService.printResponse<string>({
       status: 201,
       message: 'Image uploaded successfully',
-      data: file.filename + '.png',
+      data: file.filename,
     });
   }
 }
