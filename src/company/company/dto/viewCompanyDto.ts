@@ -21,7 +21,7 @@ export class ViewCompanyDto implements Readonly<ViewCompanyDto> {
 
   @ApiProperty({ required: true })
   @IsString()
-  image: Buffer;
+  image: string;
 
   @ApiProperty({ required: true })
   @IsString()

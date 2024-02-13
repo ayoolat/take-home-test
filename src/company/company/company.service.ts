@@ -69,7 +69,7 @@ export class CompanyService {
             __filename,
             `../../../../uploads/${c.image}`,
           );
-          companyDto.image = fs.readFileSync(basePath);
+          companyDto.image = `data:png;base64,${fs.readFileSync(basePath).toString('base64')}`;
         }
         return companyDto;
       });
@@ -94,6 +94,9 @@ export class CompanyService {
   public async getCompany(id: string) {
     try {
       const company = await this.repo.findOneBy({ id });
+      if (!company) {
+        throw new NotFoundException('Company not found');
+      }
       const companyDto = ViewCompanyDto.fromEntity(
         await this.repo.findOneBy({ id }),
       );
@@ -103,9 +106,8 @@ export class CompanyService {
           __filename,
           `../../../../uploads/${company.image}`,
         );
-        companyDto.image = fs.readFileSync(basePath);
+        companyDto.image = `data:png;base64,${fs.readFileSync(basePath).toString('base64')}`;
       }
-
       return ResponseService.printResponse<ViewCompanyDto>({
         status: 200,
         message: 'Company query successful',
