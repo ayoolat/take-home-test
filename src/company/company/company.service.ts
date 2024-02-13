@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserService } from 'src/user/user/user.service';
 import { CompanyDto } from './dto/companyDto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,9 +7,11 @@ import { Repository } from 'typeorm';
 import { ResponseService } from 'src/common/response/response.service';
 import { PaginatedList } from 'src/common/response/dtos/paginatedList';
 import { ViewCompanyDto } from './dto/viewCompanyDto';
-import fs from 'fs';
+import * as fs from 'fs';
 import { ResponseDto } from 'src/common/response/dtos/responseDto';
 import { logger } from '../../app.logger';
+import { NotFoundError } from 'rxjs';
+import * as path from 'path';
 
 @Injectable()
 export class CompanyService {
@@ -26,15 +28,16 @@ export class CompanyService {
     try {
       const user = await this.usersService.getUser(userId);
 
+      const percentage =
+        Math.round((companyDto.productsCount / companyDto.usersCount) * 100) /
+        100;
+
       const companyEntity = CompanyDto.toEntity(userId, companyDto);
       companyEntity.user = user;
-      const productsCount = parseInt(companyEntity.productsCount);
-      const usersCount = parseInt(companyEntity.usersCount);
-
-      companyEntity.percentage =
-        Math.round((productsCount / usersCount) * 100 * 100) / 100;
+      companyEntity.percentage = percentage;
 
       const savedCompanyEntity = await this.repo.save(companyEntity);
+
       return ResponseService.printResponse<CompanyDto>({
         status: 201,
         message: 'Company creation successful',
@@ -60,8 +63,14 @@ export class CompanyService {
         })
       ).map((c) => {
         const companyDto = ViewCompanyDto.fromEntity(c);
-        if (companyDto.image)
-          companyDto.image = fs.readFileSync(`../../../uploads/${c.image}`);
+
+        if (c.image) {
+          const basePath = path.join(
+            __filename,
+            `../../../../uploads/${c.image}`,
+          );
+          companyDto.image = fs.readFileSync(basePath);
+        }
         return companyDto;
       });
       return ResponseService.printResponse<PaginatedList<ViewCompanyDto[]>>({
@@ -84,10 +93,23 @@ export class CompanyService {
 
   public async getCompany(id: string) {
     try {
-      return ResponseService.printResponse<CompanyDto>({
+      const company = await this.repo.findOneBy({ id });
+      const companyDto = ViewCompanyDto.fromEntity(
+        await this.repo.findOneBy({ id }),
+      );
+
+      if (company.image) {
+        const basePath = path.join(
+          __filename,
+          `../../../../uploads/${company.image}`,
+        );
+        companyDto.image = fs.readFileSync(basePath);
+      }
+
+      return ResponseService.printResponse<ViewCompanyDto>({
         status: 200,
         message: 'Company query successful',
-        data: CompanyDto.fromEntity(await this.repo.findOneBy({ id })),
+        data: companyDto,
       });
     } catch (error) {
       logger.error(
@@ -97,10 +119,12 @@ export class CompanyService {
     }
   }
 
-  public async uploadImage(file: string, companyId: string) {
+  public async uploadImage(fileName: string, companyId: string) {
     try {
       const company = await this.repo.findOneBy({ id: companyId });
-      company.image = file;
+      if (!company) throw new NotFoundException('Company not found');
+      console.log(company);
+      company.image = fileName;
       await this.repo.save(company);
       return ResponseService.printResponse<CompanyDto>({
         status: 200,

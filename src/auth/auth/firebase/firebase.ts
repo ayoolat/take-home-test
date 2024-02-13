@@ -2,11 +2,14 @@ import 'firebase/auth';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
+
+const { privateKey } = JSON.parse(process.env.PRIVATE_KEY);
+
 const firebaseConfig = {
   type: process.env.TYPE || '',
   projectId: process.env.PROJECT_ID || '',
   privateKeyId: process.env.PRIVATE_KEY_ID || '',
-  privateKey: process.env.PRIVATE_KEY || '',
+  privateKey: privateKey || '',
   clientEmail: process.env.CLIENT_EMAIL || '',
   clientId: process.env.CLIENT_ID || '',
   authUri: process.env.AUTH_URL || '',

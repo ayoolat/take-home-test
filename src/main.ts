@@ -22,16 +22,16 @@ async function bootstrap() {
     }),
   );
 
-  const storage = multer.diskStorage({
-    destination: '../uploads',
-    filename: (req, file, cb) => {
-      cb(null, file.originalname);
-    },
-  });
+  // const storage = multer.diskStorage({
+  //   destination: '../uploads',
+  //   filename: (req, file, cb) => {
+  //     cb(null, file.originalname);
+  //   },
+  // });
 
-  const upload = multer({ storage: storage });
+  // const upload = multer({ storage: storage });
 
-  app.use(upload.single('file'));
+  // app.use(upload.single('file'));
 
   await app.listen(3000);
 }

@@ -29,16 +29,11 @@ export class CompanyController {
   constructor(private readonly companiesService: CompanyService) {}
 
   @Post('create')
-  @UseGuards(new RoleGuard(Roles.INPUTER))
   async create(
     @Body() companyDto: CompanyDto,
     @Req() req: Request,
   ): Promise<ResponseDto<CompanyDto>> {
-    const response = this.companiesService.createCompany(
-      companyDto,
-      req['user'].userId,
-    );
-    return response;
+    return this.companiesService.createCompany(companyDto, req['userId']);
   }
 
   @Get('list')
@@ -49,14 +44,19 @@ export class CompanyController {
     return await this.companiesService.getCompanies(page, pageSize);
   }
 
+  @Get(':companyId')
+  async getOne(
+    @Param('companyId') companyId: string,
+  ): Promise<ResponseDto<ViewCompanyDto>> {
+    return await this.companiesService.getCompany(companyId);
+  }
+
   @Put('/:companyId')
   @UseGuards(new RoleGuard(Roles.VIEWER))
-  @UseInterceptors(AnyFilesInterceptor())
   async addImage(
-    @UploadedFile()
-    file: Express.Multer.File,
     @Param('companyId') companyId: string,
+    @Body('fileName') fileName: string,
   ): Promise<ResponseDto<CompanyDto>> {
-    return await this.companiesService.uploadImage(file.filename, companyId);
+    return await this.companiesService.uploadImage(fileName, companyId);
   }
 }

@@ -20,6 +20,8 @@ export class CompanyDto implements Readonly<CompanyDto> {
 
   percentage: number;
 
+  image: string;
+
   public static from(dto: Partial<CompanyDto>) {
     const it = new CompanyDto();
     it.id = dto.id;
@@ -27,6 +29,7 @@ export class CompanyDto implements Readonly<CompanyDto> {
     it.usersCount = dto.usersCount;
     it.productsCount = dto.productsCount;
     it.percentage = dto.percentage;
+    it.image = dto.image;
     return it;
   }
 
@@ -37,6 +40,7 @@ export class CompanyDto implements Readonly<CompanyDto> {
       usersCount: parseInt(entity.usersCount),
       productsCount: parseInt(entity.productsCount),
       percentage: entity.percentage,
+      image: entity.image,
     });
   }
 
@@ -48,6 +52,7 @@ export class CompanyDto implements Readonly<CompanyDto> {
     it.usersCount = company.usersCount.toString();
     it.productsCount = company.productsCount.toString();
     it.percentage = company.percentage;
+    it.image = company.image;
     it.createDateTime = new Date();
     it.createdBy = user ? user : null;
     it.lastChangedBy = user ? user : null;

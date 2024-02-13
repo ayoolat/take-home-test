@@ -14,6 +14,7 @@ import { APP_FILTER } from '@nestjs/core';
 import { ErrorFilter } from './common/filter/error.filter';
 import { UserModule } from './user/user.module';
 import { databaseProviders } from './common/database/provider';
+import { UploadsModule } from './uploads/uploads.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { databaseProviders } from './common/database/provider';
     AuthModule,
     CompanyModule,
     UserModule,
+    UploadsModule,
   ],
   controllers: [],
   providers: [
