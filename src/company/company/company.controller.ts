@@ -29,11 +29,12 @@ export class CompanyController {
   constructor(private readonly companiesService: CompanyService) {}
 
   @Post('create')
+  @UseGuards(new RoleGuard(Roles.INPUTER))
   async create(
     @Body() companyDto: CompanyDto,
     @Req() req: Request,
   ): Promise<ResponseDto<CompanyDto>> {
-    return this.companiesService.createCompany(companyDto, req['userId']);
+    return this.companiesService.createCompany(companyDto, req['user'].userId);
   }
 
   @Get('list')
