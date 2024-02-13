@@ -27,7 +27,7 @@ export class CompanyService {
   ): Promise<ResponseDto<CompanyDto>> {
     try {
       const user = await this.usersService.getUser(userId);
-
+      if (!user) throw new NotFoundException('User not found');
       const percentage =
         Math.round((companyDto.productsCount / companyDto.usersCount) * 100) /
         100;
@@ -122,8 +122,10 @@ export class CompanyService {
   public async uploadImage(fileName: string, companyId: string) {
     try {
       const company = await this.repo.findOneBy({ id: companyId });
-      if (!company) throw new NotFoundException('Company not found');
-      console.log(company);
+      if (!company) {
+        throw new NotFoundException('Company not found');
+      }
+
       company.image = fileName;
       await this.repo.save(company);
       return ResponseService.printResponse<CompanyDto>({

@@ -7,7 +7,6 @@ export const databaseProviders = [
   {
     provide: 'TypeORM',
     useFactory: async () => {
-      console.log('src/**/*.entity.{ts}');
       let config: IDatabaseConfigAttributes;
       switch (process.env.NODE_ENV) {
         case 'DEVELOPMENT':

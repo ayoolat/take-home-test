@@ -35,7 +35,6 @@ export class UploadsController {
     )
     file: Express.Multer.File,
   ) {
-    console.log(file);
     return ResponseService.printResponse<string>({
       status: 201,
       message: 'Image uploaded successfully',

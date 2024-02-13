@@ -45,7 +45,6 @@ export class CompanyDto implements Readonly<CompanyDto> {
   }
 
   public static toEntity(user: string = null, company: CompanyDto) {
-    console.log(user);
     const it = new CompanyEntity();
     it.id = company.id;
     it.name = company.name;
