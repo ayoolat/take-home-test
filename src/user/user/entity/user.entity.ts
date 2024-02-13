@@ -16,7 +16,7 @@ export class UserEntity {
   @Column({ type: 'varchar', length: 300 })
   email: string;
 
-  @Column({ type: 'varchar', length: 20 })
+  @Column({ type: 'varchar', length: 50 })
   userId: string;
 
   @Column({ type: 'varchar', length: 300 })

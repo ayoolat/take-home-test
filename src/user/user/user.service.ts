@@ -11,7 +11,7 @@ export class UserService {
   ) {}
 
   public async createUser(user: UserDto) {
-    await this.repo.create(new UserDto().toEntity(user));
+    await this.repo.save(new UserDto().toEntity(user));
     return user;
   }
 

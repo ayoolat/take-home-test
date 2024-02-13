@@ -33,12 +33,12 @@ export class UserDto implements Readonly<UserDto> {
 
   public toEntity(user: UserDto = null) {
     const it = new UserEntity();
-    it.id = this.id;
-    it.email = this.email;
-    it.userId = this.userId;
+    it.id = user.id;
+    it.email = user.email;
+    it.userId = user.userId;
     it.createDateTime = new Date();
-    it.createdBy = user ? user.id : null;
-    it.lastChangedBy = user ? user.id : null;
+    it.createdBy = user.userId;
+    it.lastChangedBy = user.userId;
     return it;
   }
 }
