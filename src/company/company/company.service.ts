@@ -10,7 +10,6 @@ import { ViewCompanyDto } from './dto/viewCompanyDto';
 import * as fs from 'fs';
 import { ResponseDto } from 'src/common/response/dtos/responseDto';
 import { logger } from '../../app.logger';
-import { NotFoundError } from 'rxjs';
 import * as path from 'path';
 
 @Injectable()
@@ -27,11 +26,12 @@ export class CompanyService {
   ): Promise<ResponseDto<CompanyDto>> {
     try {
       const user = await this.usersService.getUser(userId);
-      if (!user) throw new NotFoundException('User not found');
-      const percentage =
-        Math.round((companyDto.productsCount / companyDto.usersCount) * 100) /
-        100;
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
 
+      const percentage =
+        Math.round(companyDto.usersCount / companyDto.productsCount) * 100;
       const companyEntity = CompanyDto.toEntity(userId, companyDto);
       companyEntity.user = user;
       companyEntity.percentage = percentage;

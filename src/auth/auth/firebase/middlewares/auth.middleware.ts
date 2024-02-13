@@ -1,13 +1,10 @@
 import * as firebase from 'firebase-admin';
 import {
-  Inject,
   Injectable,
   NestMiddleware,
-  Next,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Response, Request } from 'express';
-import * as admin from 'firebase-admin';
 import { firebaseConfig } from '../firebase';
 
 @Injectable()
@@ -48,7 +45,7 @@ export class PreAuthMiddleware implements NestMiddleware {
       statusCode: 403,
       timestamp: new Date().toISOString(),
       path: url,
-      message: 'Access Denied',
+      message: 'Token invalid or expired',
     });
   }
 }

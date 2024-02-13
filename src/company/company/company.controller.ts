@@ -6,20 +6,15 @@ import {
   Query,
   Req,
   Put,
-  UseInterceptors,
-  UploadedFile,
   Param,
-  ParseFilePipeBuilder,
-  HttpStatus,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
+import { ApiBearerAuth } from '@nestjs/swagger';
 import { CompanyService } from './company.service';
 import { CompanyDto } from './dto/companyDto';
 import { ResponseDto } from 'src/common/response/dtos/responseDto';
 import { PaginatedList } from 'src/common/response/dtos/paginatedList';
 import { ViewCompanyDto } from './dto/viewCompanyDto';
-import { FileInterceptor, AnyFilesInterceptor } from '@nestjs/platform-express';
 import { RoleGuard } from 'src/common/gaurd/gaurd';
 import { Roles } from 'src/auth/auth/dto/enum';
 

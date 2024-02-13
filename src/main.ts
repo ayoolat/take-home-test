@@ -13,7 +13,6 @@ async function bootstrap() {
     credentials: true,
   });
 
-  app.use(bodyParser.json());
   app.use(cookieParser());
 
   app.useGlobalPipes(
@@ -21,17 +20,6 @@ async function bootstrap() {
       whitelist: true,
     }),
   );
-
-  // const storage = multer.diskStorage({
-  //   destination: '../uploads',
-  //   filename: (req, file, cb) => {
-  //     cb(null, file.originalname);
-  //   },
-  // });
-
-  // const upload = multer({ storage: storage });
-
-  // app.use(upload.single('file'));
 
   await app.listen(3000);
 }
