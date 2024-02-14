@@ -60,6 +60,9 @@ export class CompanyService {
   ): Promise<ResponseDto<PaginatedList<ViewCompanyDto[]>>> {
     try {
       const user = await this.usersService.getUser(userId);
+      if (!user) {
+        throw new NotFoundException('User not found.');
+      }
       const companies = (
         await this.repo.find({
           skip: (page - 1) * pageSize,
