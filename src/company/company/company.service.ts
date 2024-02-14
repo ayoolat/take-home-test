@@ -197,7 +197,6 @@ export class CompanyService {
       companyDto.image = `data:png;base64,${fs.readFileSync(basePath).toString('base64')}`;
     } catch (error) {
       logger.error(error.message);
-    } finally {
       companyDto.image = '';
     }
   }
