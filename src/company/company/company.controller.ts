@@ -33,6 +33,7 @@ export class CompanyController {
   }
 
   @Get('list/all')
+  @UseGuards(new RoleGuard(Roles.VIEWER))
   async getCompanies(
     @Query('page') page: number = 1,
     @Query('pageSize') pageSize: number = 10,
@@ -41,6 +42,7 @@ export class CompanyController {
   }
 
   @Get('/list')
+  @UseGuards(new RoleGuard(Roles.INPUTER))
   async getUserCompanies(
     @Query('page') page: number = 1,
     @Query('pageSize') pageSize: number = 10,
