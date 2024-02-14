@@ -32,12 +32,25 @@ export class CompanyController {
     return this.companiesService.createCompany(companyDto, req['user'].userId);
   }
 
-  @Get('list')
-  async get(
+  @Get('list/all')
+  async getCompanies(
     @Query('page') page: number = 1,
     @Query('pageSize') pageSize: number = 10,
   ): Promise<ResponseDto<PaginatedList<ViewCompanyDto[]>>> {
     return await this.companiesService.getCompanies(page, pageSize);
+  }
+
+  @Get('/list')
+  async getUserCompanies(
+    @Query('page') page: number = 1,
+    @Query('pageSize') pageSize: number = 10,
+    @Req() req: Request,
+  ): Promise<ResponseDto<PaginatedList<ViewCompanyDto[]>>> {
+    return await this.companiesService.getUserCompanies(
+      page,
+      pageSize,
+      req['user'].userId,
+    );
   }
 
   @Get(':companyId')

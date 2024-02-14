@@ -27,14 +27,16 @@ export class CompanyService {
     try {
       const user = await this.usersService.getUser(userId);
       if (!user) {
-        throw new NotFoundException('User not found');
+        throw new NotFoundException('User not found.');
       }
 
-      const percentage =
-        Math.round(companyDto.usersCount / companyDto.productsCount) * 100;
+      const averageUsersPerProduct =
+        companyDto.usersCount / companyDto.productsCount;
       const companyEntity = CompanyDto.toEntity(userId, companyDto);
+      companyEntity.percentage = parseFloat(
+        ((averageUsersPerProduct / companyDto.usersCount) * 100).toFixed(2),
+      );
       companyEntity.user = user;
-      companyEntity.percentage = percentage;
 
       const savedCompanyEntity = await this.repo.save(companyEntity);
 
@@ -51,15 +53,19 @@ export class CompanyService {
     }
   }
 
-  public async getCompanies(
+  public async getUserCompanies(
     page: number,
     pageSize: number,
+    userId: string,
   ): Promise<ResponseDto<PaginatedList<ViewCompanyDto[]>>> {
     try {
+      const user = await this.usersService.getUser(userId);
       const companies = (
         await this.repo.find({
           skip: (page - 1) * pageSize,
           take: pageSize,
+          where: { userId: user.id },
+          order: { id: 'DESC' },
         })
       ).map((c) => {
         const companyDto = ViewCompanyDto.fromEntity(c);
@@ -69,7 +75,48 @@ export class CompanyService {
             __filename,
             `../../../../uploads/${c.image}`,
           );
-          companyDto.image = `data:png;base64,${fs.readFileSync(basePath).toString('base64')}`;
+          this.handleImage(companyDto, basePath);
+        }
+        return companyDto;
+      });
+      return ResponseService.printResponse<PaginatedList<ViewCompanyDto[]>>({
+        status: 200,
+        message: 'Company query successful',
+        data: {
+          page,
+          pageSize,
+          totalCount: await this.repo.count({ where: { userId: user.id } }),
+          data: companies,
+        },
+      });
+    } catch (error) {
+      logger.error(
+        `[${new Date().toUTCString()}] :: Error while fetching companies :: ${error.message}`,
+      );
+      throw error;
+    }
+  }
+
+  public async getCompanies(
+    page: number,
+    pageSize: number,
+  ): Promise<ResponseDto<PaginatedList<ViewCompanyDto[]>>> {
+    try {
+      const companies = (
+        await this.repo.find({
+          skip: (page - 1) * pageSize,
+          take: pageSize,
+          order: { id: 'DESC' },
+        })
+      ).map((c) => {
+        const companyDto = ViewCompanyDto.fromEntity(c);
+
+        if (c.image) {
+          const basePath = path.join(
+            __filename,
+            `../../../../uploads/${c.image}`,
+          );
+          this.handleImage(companyDto, basePath);
         }
         return companyDto;
       });
@@ -106,7 +153,7 @@ export class CompanyService {
           __filename,
           `../../../../uploads/${company.image}`,
         );
-        companyDto.image = `data:png;base64,${fs.readFileSync(basePath).toString('base64')}`;
+        this.handleImage(companyDto, basePath);
       }
       return ResponseService.printResponse<ViewCompanyDto>({
         status: 200,
@@ -140,6 +187,15 @@ export class CompanyService {
         `[${new Date().toUTCString()}] :: Error while uploading image :: ${error.message}`,
       );
       throw error;
+    }
+  }
+  private handleImage(companyDto: ViewCompanyDto, basePath: string) {
+    try {
+      companyDto.image = `data:png;base64,${fs.readFileSync(basePath).toString('base64')}`;
+    } catch (error) {
+      logger.error(error.message);
+    } finally {
+      companyDto.image = '';
     }
   }
 }

@@ -40,6 +40,9 @@ export class CompanyEntity {
   @Column({ type: 'varchar', length: 300 })
   lastChangedBy: string;
 
+  @Column({ nullable: true })
+  userId: string;
+
   @ManyToOne(() => UserEntity, (user) => user.companies)
   user: UserEntity;
 }
